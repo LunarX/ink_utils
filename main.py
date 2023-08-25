@@ -10,6 +10,7 @@ import subprocess
 import eml_writer as ew
 import loco_updater as lu
 import login as lg
+import git_pr
 from adb import adb, select_device, get_all_devices, close_app, open_app
 from utils import remove_empty_items, select_in_list, accept_substitution
 
@@ -169,6 +170,10 @@ def set_dark_mode(yes_or_no, device_id):
     adb(f'shell "cmd uimode night {yes_or_no}"', device_id)
 
 
+def open_pr(branch):
+    output = git_pr.open_pr("external-matomo")
+
+
 def catch_empty_calls(parser):
     return lambda _: parser.print_usage()
 
@@ -255,6 +260,10 @@ def define_commands(parser):
     light_parser.set_defaults(func=force_light_mode)
     toggle_parser = color_subparser.add_parser("toggle", help="toggles the current dark mode")
     toggle_parser.set_defaults(func=toggle_dark_light_mode)
+
+    # Pull requests
+    pr_parser = subparsers.add_parser("pr", help="automatically create PR")
+    pr_parser.set_defaults(func=open_pr)
 
 
 if __name__ == '__main__':
